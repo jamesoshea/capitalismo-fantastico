@@ -23,11 +23,23 @@ app.get('/user/:username', (req, res) => {
 				res.error(err)
 			})
 	)
+
 	stats.push(
 		axios.get(`${baseEndpoint}/users/${req.params.username}/followers`)
 			.then(response => {
 				const followerInfo = processFollowers(response.data)
 				return followerInfo
+			})
+			.catch((err) => {
+				res.error(err)
+			})
+	)
+
+	stats.push(
+		axios.get(`${baseEndpoint}/users/${req.params.username}/repos`)
+			.then(response => {
+				const repoInfo = processRepos(response.data)
+				return repoInfo
 			})
 			.catch((err) => {
 				res.error(err)
@@ -41,22 +53,22 @@ app.get('/user/:username', (req, res) => {
 })
 
 app.listen(3000, () => {
-	console.log('Example app listening on port 3000!')
+	
 })
 
 const processUser = (user) => {
 	if(user.hireable) {
 		return ({
-			bio: user.bio,
-			repoCount: user.public_repos,
+			bio: user.bio
 		})
 	}
 	return false
 }
 
 const processFollowers = (followers) => {
-	return followers.length
+	return ({ followerCount: followers.length })
 }
 
-const processLocation = (location, stats) => {
+const processRepos = (repos) => {
+	return ({ repoCount: repos.length })
 }
