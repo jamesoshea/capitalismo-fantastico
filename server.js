@@ -24,9 +24,8 @@ app.get('/user/:username', (req, res) => {
 				console.log(err)
 			})
 	)
-
-	stats.push(
-		axios.get(`${baseEndpoint}/users/${req.params.username}/followers?access_token=${secrets.gitHubKey}`)
+	const getFollowers = () => {
+		return axios.get(`${baseEndpoint}/users/${req.params.username}/followers?access_token=${secrets.gitHubKey}`)
 			.then(response => {
 				const followerInfo = processFollowers(response.data)
 				return followerInfo
@@ -34,7 +33,8 @@ app.get('/user/:username', (req, res) => {
 			.catch(err => {
 				res.send(err)
 			})
-	)
+	}
+	stats.push(getFollowers())
 
 	stats.push(
 		axios.get(`${baseEndpoint}/users/${req.params.username}/repos?access_token=${secrets.gitHubKey}`)
