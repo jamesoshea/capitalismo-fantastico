@@ -4,6 +4,7 @@ const axios = require('axios')
 const app = express()
 
 const secrets = require('./secrets')
+const weights = require('./weights')
 
 app.use(bodyParser.json())
 
@@ -63,13 +64,14 @@ app.listen(3000, () => {
 })
 
 const processUser = (user) => {
-	if(user.hireable) {
-		return ({
-			bio: user.bio
-		})
-	}
-	return false
-}
+	const plan = user.plan ? user.plan.name : ''
+	return ({
+		hireable: user.hireable,
+		bio: user.bio,
+		plan,
+		company: user.company,
+	})
+}	
 
 const processFollowers = (followers) => {
 	return ({ followerCount: followers.length })
@@ -77,7 +79,11 @@ const processFollowers = (followers) => {
 
 const processRepos = (repos) => {
 	const repoScore = repos.reduce((accumulator, repo) => {
-		return accumulator + (repo.stargazers_count * 2) + (repo.watchers * 3) + (repo.forks * 10)
-	}, 0)
+		return (
+			accumulator +
+			(repo.stargazers_count * weights.stars) +
+			(repo.watchers * weights.watchers) +
+			(repo.forks * weights.forks)
+		)}, 0)
 	return ({ repoCount: repos.length, repoScore })
 }
