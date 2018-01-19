@@ -16,22 +16,11 @@ app.get('/user/:username', (req, res) => {
 	stats.push(
 		axios.get(`${baseEndpoint}/users/${req.params.username}`)
 			.then(response => {
-				const key = secrets.mapsKey
-				stats.push(
-					axios.get(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${response.data.location}&key=${key}`)
-					.then((response) => {
-						console.log(response.data)
-						return response.data.results[0].formatted_address
-					})
-					.catch((err) => {
-						console.log(err)
-					})
-				)
 				const userInfo = processUser(response.data)
 				return userInfo
 			})
 			.catch((err) => {
-				console.error(err)
+				res.error(err)
 			})
 	)
 	stats.push(
@@ -41,13 +30,12 @@ app.get('/user/:username', (req, res) => {
 				return followerInfo
 			})
 			.catch((err) => {
-				console.error(err)
+				res.error(err)
 			})
 	)
 
 	Promise.all(stats)
 		.then(data => {
-			console.log(data)
 			res.json(data)
 		})
 })
