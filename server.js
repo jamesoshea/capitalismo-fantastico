@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const axios = require('axios')
 const app = express()
 
+const fetchers = require('./fetchers')
 const secrets = require('./secrets')
 const weights = require('./weights')
 
@@ -13,17 +14,7 @@ const baseEndpoint = 'https://api.github.com'
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.get('/user/:username', (req, res) => {
-	const stats = []
-	stats.push(
-		axios.get(`${baseEndpoint}/users/${req.params.username}?access_token=${secrets.gitHubKey}`)
-			.then(response => {
-				const userInfo = processUser(response.data)
-				return userInfo
-			})
-			.catch(err => {
-				console.log(err)
-			})
-	)
+
 	const getFollowers = () => {
 		return axios.get(`${baseEndpoint}/users/${req.params.username}/followers?access_token=${secrets.gitHubKey}`)
 			.then(response => {
@@ -34,10 +25,9 @@ app.get('/user/:username', (req, res) => {
 				res.send(err)
 			})
 	}
-	stats.push(getFollowers())
 
-	stats.push(
-		axios.get(`${baseEndpoint}/users/${req.params.username}/repos?access_token=${secrets.gitHubKey}`)
+	const getRepos = () => {
+		return axios.get(`${baseEndpoint}/users/${req.params.username}/repos?access_token=${secrets.gitHubKey}`)
 			.then(response => {
 				const repoInfo = processRepos(response.data)
 				return repoInfo
@@ -45,10 +35,10 @@ app.get('/user/:username', (req, res) => {
 			.catch(err => {
 				res.send(err)
 			})
-	)
+	}
 
-	stats.push(
-		axios.get(`${baseEndpoint}/users/${req.params.username}/orgs?access_token=${secrets.gitHubKey}`)
+	const getOrgs = () => {
+		return axios.get(`${baseEndpoint}/users/${req.params.username}/orgs?access_token=${secrets.gitHubKey}`)
 			.then(response => {
 				const orgInfo = processOrgs(response.data)
 				return orgInfo
@@ -56,7 +46,13 @@ app.get('/user/:username', (req, res) => {
 			.catch(err => {
 				res.send(err)
 			})
-	)
+	}
+
+	const stats = []
+	stats.push(fetchers.getUser(req))
+	stats.push(getFollowers())
+	stats.push(getRepos())
+	stats.push(getOrgs())
 
 	Promise.all(stats)
 		.then(data => {
@@ -73,16 +69,6 @@ app.get('/user/:username', (req, res) => {
 app.listen(3000, () => {
 	console.log('wow')	
 })
-
-const processUser = user => {
-	const plan = user.plan ? user.plan.name : ''
-	return ({
-		hireable: user.hireable,
-		bio: user.bio,
-		plan,
-		company: user.company,
-	})
-}	
 
 const processFollowers = followers => ({ followerCount: followers.length })
 
