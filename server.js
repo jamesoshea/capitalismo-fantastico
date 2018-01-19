@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const axios = require('axios')
 const app = express()
 
+const secrets = require('./secrets')
+
 app.use(bodyParser.json())
 
 const baseEndpoint = 'https://api.github.com' 
@@ -14,6 +16,17 @@ app.get('/user/:username', (req, res) => {
 	stats.push(
 		axios.get(`${baseEndpoint}/users/${req.params.username}`)
 			.then(response => {
+				const key = secrets.mapsKey
+				stats.push(
+					axios.get(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${response.data.location}&key=${key}`)
+					.then((response) => {
+						console.log(response.data)
+						return response.data.results[0].formatted_address
+					})
+					.catch((err) => {
+						console.log(err)
+					})
+				)
 				const userInfo = processUser(response.data)
 				return userInfo
 			})
@@ -31,8 +44,10 @@ app.get('/user/:username', (req, res) => {
 				console.error(err)
 			})
 	)
+
 	Promise.all(stats)
 		.then(data => {
+			console.log(data)
 			res.json(data)
 		})
 })
@@ -52,5 +67,8 @@ const processUser = (user) => {
 }
 
 const processFollowers = (followers) => {
-		return followers.length
+	return followers.length
+}
+
+const processLocation = (location, stats) => {
 }
