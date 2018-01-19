@@ -20,7 +20,7 @@ app.get('/user/:username', (req, res) => {
 				const userInfo = processUser(response.data)
 				return userInfo
 			})
-			.catch((err) => {
+			.catch(err => {
 				console.log(err)
 			})
 	)
@@ -31,7 +31,7 @@ app.get('/user/:username', (req, res) => {
 				const followerInfo = processFollowers(response.data)
 				return followerInfo
 			})
-			.catch((err) => {
+			.catch(err => {
 				res.send(err)
 			})
 	)
@@ -42,7 +42,18 @@ app.get('/user/:username', (req, res) => {
 				const repoInfo = processRepos(response.data)
 				return repoInfo
 			})
-			.catch((err) => {
+			.catch(err => {
+				res.send(err)
+			})
+	)
+
+	stats.push(
+		axios.get(`${baseEndpoint}/users/${req.params.username}/orgs?access_token=${secrets.gitHubKey}`)
+			.then(response => {
+				const orgInfo = processOrgs(response.data)
+				return orgInfo
+			})
+			.catch(err => {
 				res.send(err)
 			})
 	)
@@ -60,10 +71,10 @@ app.get('/user/:username', (req, res) => {
 })
 
 app.listen(3000, () => {
-	
+	console.log('wow')	
 })
 
-const processUser = (user) => {
+const processUser = user => {
 	const plan = user.plan ? user.plan.name : ''
 	return ({
 		hireable: user.hireable,
@@ -73,9 +84,7 @@ const processUser = (user) => {
 	})
 }	
 
-const processFollowers = (followers) => {
-	return ({ followerCount: followers.length })
-}
+const processFollowers = followers => ({ followerCount: followers.length })
 
 const processRepos = (repos) => {
 	const repoScore = repos.reduce((accumulator, repo) => {
@@ -87,3 +96,5 @@ const processRepos = (repos) => {
 		)}, 0)
 	return ({ repoCount: repos.length, repoScore })
 }
+
+const processOrgs = orgs => ({ orgCount: orgs.length })
