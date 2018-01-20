@@ -4,8 +4,12 @@
 			<img class="avatar__img":src="profile.photoUrl" :alt="profile.login">
 		</div>
 		<div class="user-information">
-			<div class="user-information__name" v-text="profile.login" />
-			<div class="user-information__score" v-text="scoreRepresentation" />
+			<a :href="linkRepresentation" target="blank">
+				<p class="user-information__name" v-text="profile.login" />
+			</a>
+			<a href="#how-calculated" class="unstyled-link">
+				<p class="user-information__score" v-text="scoreRepresentation" />
+			</a>
 		</div>
 	</div>
 </template>
@@ -22,6 +26,9 @@ export default {
 	computed: {
 		scoreRepresentation() {
 			return `score: ${this.profile.repoScore}`
+		},
+		linkRepresentation() {
+			return `https://github.com/${this.profile.login}`
 		}
 	}
 }
@@ -59,6 +66,11 @@ export default {
 .user-information__score {
 	margin-top: 5vw;
 	font-size: 10vw;
+}
+
+.unstyled-link {
+	text-decoration: none;
+	color: inherit;
 }
 
 </style>
