@@ -4,11 +4,6 @@ const axios = require('axios')
 const app = express()
 
 const fetchers = require('./fetchers')
-const secrets = require('./secrets')
-
-app.use(bodyParser.json())
-
-const baseEndpoint = 'https://api.github.com' 
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
