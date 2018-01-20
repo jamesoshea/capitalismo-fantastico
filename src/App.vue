@@ -48,7 +48,6 @@ export default {
   methods: {
     sendQuery(e) {
       if(e.keyCode === 13) {
-        console.log('hello')
         axios.get(`http://localhost:3000/user/${this.userName}`)
           .then(queryData => {
             this.queryData = queryData.data

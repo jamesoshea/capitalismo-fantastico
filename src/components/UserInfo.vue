@@ -1,6 +1,12 @@
 <template>
 	<div class="container">
-		<p v-if="locationAvailable" v-text="distanceRepresentation" />
+		<p 
+			class="hireablity-message"
+			v-if="locationAvailable" v-text="representationRepresentation"
+		/>
+		<p class="hireablity-message">
+			more info
+		</p>
 	</div>
 </template>
 
@@ -26,12 +32,22 @@ export default {
 				this.userLocation.lat,
 				this.userLocation.lng
 			).toFixed(1)
-			return `This person is located ${distance}km away.`
+			return `This person is located ${distance}km away`
+		},
+		hireabilityRepresentation() {
+			return this.hireable ?
+				', and they are hireable, according to GitHub.' :
+				', but they are not hireable, accoring to GitHub.'
+		},
+		representationRepresentation() {
+			return `${this.distanceRepresentation}${this.hireabilityRepresentation}`
+		},
+		locationAvailable() {
+			return Boolean(Object.keys(this.location).length !== 0 && Object.keys(this.userLocation).length !== 0)
 		}
 	},
 	data() {
 		return {
-			locationAvailable: false,
 			userLocation: {},
 		}
 	},
@@ -40,7 +56,6 @@ export default {
 			navigator.geolocation.getCurrentPosition(position => {
 				this.userLocation.lat = position.coords.latitude
 				this.userLocation.lng = position.coords.longitude
-				this.locationAvailable = true
 			})
 		}
 	}
@@ -53,6 +68,10 @@ export default {
 	min-height: 20vh;
 	color: #FFF;
   background-color: #2c3e50;
+}
+
+.hireablity-message {
+	padding-top: 5vw;
 }
 
 </style>

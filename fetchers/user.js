@@ -4,9 +4,10 @@ const secrets = require('./../secrets')
 const getUser = (req) => {
 	const processUser = user => {
 		const plan = user.plan ? user.plan.name : ''
+		const hireable = Boolean(user.hireable)
 		return ({
 			login: user.login,
-			hireable: user.hireable,
+			hireable,
 			bio: user.bio,
 			plan,
 			company: user.company,
@@ -23,12 +24,12 @@ const getUser = (req) => {
 		.then(userInfo => {
 			return axios.get(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${userInfo.location}&key=${secrets.mapsKey}`)
 				.then((response) => {
-					return Object.assign(userInfo, {
-						location: {
-							lat: response.data.results[0].geometry.location.lat,
-							lng: response.data.results[0].geometry.location.lng
-						}
-					})
+					const location = response.data.results.length ? {
+						lat: response.data.results[0].geometry.location.lat,
+						lng: response.data.results[0].geometry.location.lng
+					} : {}
+					userInfo.location = location
+					return userInfo	
 				})
 				.catch((err) => {
 					console.log(err)
