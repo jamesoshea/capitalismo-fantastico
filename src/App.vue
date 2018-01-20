@@ -1,30 +1,55 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <h1>search for a user on github</h1>
+    <input type="text" v-model="userName" @keydown="sendQuery">
+    <div v-if="response">
+      <h4>username</h4>
+      <a :href="linkRepresentation">
+        <p v-text="response.login" />
+      </a>
+      <h4>repositories</h4>
+      <p v-text="response.repoCount" />
+      <h4>followers</h4>
+      <p v-text="response.followerCount" />
+      <h4>repositories</h4>
+      <p v-text="response.repoCount" />
+      
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'app',
+  computed: {
+    linkRepresentation() {
+      return `https://github.com/${this.response.login}`
+    }
+  },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      response: null,
+      userName: ''
+    }
+  },
+  mounted() {
+
+  },
+  methods: {
+    sendQuery(e) {
+      if(e.keyCode === 13) {
+        console.log('hello')
+        axios.get(`http://localhost:3000/user/${this.userName}`)
+          .then(response => {
+            this.response = response.data
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      }
     }
   }
 }

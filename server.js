@@ -1,13 +1,12 @@
 const express = require('express')
-const bodyParser = require('body-parser')
-const axios = require('axios')
+const cors = require('cors')
 const app = express()
 
 const fetchers = require('./fetchers')
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
-app.get('/user/:username', (req, res) => {
+app.get('/user/:username', cors(), (req, res) => {
 	const stats = []
 	stats.push(fetchers.getUser(req))
 	stats.push(fetchers.getFollowers(req))
