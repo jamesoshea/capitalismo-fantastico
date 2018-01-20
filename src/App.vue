@@ -12,6 +12,8 @@
     />
     <UserInfo
       v-if="queryData"
+      :hireable="queryData.hireable"
+      :location="queryData.location"
     />
     </div>
   </div>
@@ -87,6 +89,10 @@ h1, h2 {
 input {
   margin-top: 2vh;
   text-align: center;
+  color: #FFF;
+  background-color: #2c3e50;
+  font-size: 4vh;
+  border: 0
 }
 
 a {
