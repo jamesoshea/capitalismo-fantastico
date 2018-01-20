@@ -1,12 +1,17 @@
 <template>
-	<div class="container">
+	<div class="main">
 		<p 
 			class="hireablity-message"
 			v-text="representationRepresentation"
 		/>
-		<p class="hireablity-message">
-			
-		</p>
+		<div class="container">
+			<div v-for="stat in profileStats" :key="stat">
+				<div class="column">
+					<div class="" v-text="stat.text" />
+					<div class="stat-value" v-text="stat.value" />
+				</div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -45,6 +50,13 @@ export default {
 				this.userLocation !== null &&
 				this.profile.location !== null
 			)
+		},
+		profileStats() {
+			return [
+				{ text: 'Repositories', value: this.profile.repoCount },
+				{ text: 'Followers', value: this.profile.followerCount },
+				{ text: 'Organisations', value: this.profile.orgCount }
+			]
 		}
 	},
 	data() {
@@ -67,10 +79,33 @@ export default {
 
 <style lang="scss" scoped>
 
-.container {
-	min-height: 20vh;
+.main {
 	color: #FFF;
   background-color: #2c3e50;
+}
+
+.table--full-width {
+	margin-top: 4vh;
+	width: 100%;
+}
+
+.container {
+	display: flex;
+	flex-direction: horizontal;
+	flex-wrap: wrap;
+	margin-top: 5vw;
+	padding-bottom: 5vw;
+	justify-content: space-around;
+}
+
+.column {
+	text-align: center;
+}
+
+.stat-value {
+	flex-basis: 1;
+	padding-top: 1vw;
+	font-size: 5vw;
 }
 
 .hireablity-message {
