@@ -6,14 +6,11 @@
     </header>
     <UserMain
       v-if="queryData"
-      :avatarUrl="queryData.photoUrl"
-      :userName="queryData.login"
-      :score="queryData.repoScore"
+      :profile="queryData"
     />
     <UserInfo
       v-if="queryData"
-      :hireable="queryData.hireable"
-      :location="queryData.location"
+      :profile="queryData"
     />
     </div>
   </div>

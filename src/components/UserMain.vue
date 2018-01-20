@@ -1,11 +1,11 @@
 <template>
 	<div class="container">
 		<div class="avatar">
-			<img class="avatar__img":src="avatarUrl" :alt="userName">
+			<img class="avatar__img":src="profile.photoUrl" :alt="profile.login">
 		</div>
 		<div class="user-information">
-			<div class="user-information__name" v-text="userName" />
-			<div class="user-information__score" v-text="score" />
+			<div class="user-information__name" v-text="profile.login" />
+			<div class="user-information__score" v-text="scoreRepresentation" />
 		</div>
 	</div>
 </template>
@@ -14,18 +14,15 @@
 export default {
 	name: 'UserMain',
 	props: {
-		userName: {
-			type: String,
+		profile: {
+			type: Object,
 			required: true
-		},
-		score: {
-			type: Number,
-			required: true
-		},
-		avatarUrl: {
-			type: String,
-			required: true
-		},
+		}
+	},
+	computed: {
+		scoreRepresentation() {
+			return `score: ${this.profile.repoScore}`
+		}
 	}
 }
 </script>

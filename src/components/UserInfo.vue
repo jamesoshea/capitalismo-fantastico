@@ -2,10 +2,10 @@
 	<div class="container">
 		<p 
 			class="hireablity-message"
-			v-if="locationAvailable" v-text="representationRepresentation"
+			v-text="representationRepresentation"
 		/>
 		<p class="hireablity-message">
-			more info
+			
 		</p>
 	</div>
 </template>
@@ -15,11 +15,7 @@ import distanceUtil from '../util/distanceUtil'
 
 export default {
 	props: {
-		hireable: {
-			type: Boolean,
-			required: true
-		},
-		location: {
+		profile: {
 			type: Object,
 			required: true
 		}
@@ -27,35 +23,42 @@ export default {
 	computed: {
 		distanceRepresentation() {
 			const distance = distanceUtil.getDistanceFromLatLonInKm(
-				this.location.lat,
-				this.location.lng,
+				this.profile.location.lat,
+				this.profile.location.lng,
 				this.userLocation.lat,
 				this.userLocation.lng
 			).toFixed(1)
-			return `This person is located ${distance}km away`
+			return `This superb candidate is located ${distance}km away. `
 		},
 		hireabilityRepresentation() {
-			return this.hireable ?
-				', and they are hireable, according to GitHub.' :
-				', but they are not hireable, accoring to GitHub.'
+			return this.profile.hireable ?
+				`${this.profile.login} is hireable, according to GitHub.` :
+				`${this.profile.login} is not hireable, accoring to GitHub.`
 		},
 		representationRepresentation() {
-			return `${this.distanceRepresentation}${this.hireabilityRepresentation}`
+			return this.locationAvailable ?
+				`${this.distanceRepresentation}${this.hireabilityRepresentation}` :
+				this.hireabilityRepresentation
 		},
 		locationAvailable() {
-			return Boolean(Object.keys(this.location).length !== 0 && Object.keys(this.userLocation).length !== 0)
+			return (
+				this.userLocation !== null &&
+				this.profile.location !== null
+			)
 		}
 	},
 	data() {
 		return {
-			userLocation: {},
+			userLocation: null,
 		}
 	},
 	mounted() {
 		if ("geolocation" in navigator) {
 			navigator.geolocation.getCurrentPosition(position => {
-				this.userLocation.lat = position.coords.latitude
-				this.userLocation.lng = position.coords.longitude
+				this.userLocation = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude,
+				}
 			})
 		}
 	}

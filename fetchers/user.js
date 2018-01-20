@@ -27,7 +27,8 @@ const getUser = (req) => {
 					const location = response.data.results.length ? {
 						lat: response.data.results[0].geometry.location.lat,
 						lng: response.data.results[0].geometry.location.lng
-					} : {}
+					} : null
+					console.log(location)
 					userInfo.location = location
 					return userInfo	
 				})
