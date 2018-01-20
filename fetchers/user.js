@@ -23,7 +23,7 @@ const getUser = (req) => {
 		.then(userInfo => {
 			return axios.get(`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${userInfo.location}&key=${secrets.mapsKey}`)
 				.then((response) => {
-					return Object.assign(userInfo,{
+					return Object.assign(userInfo, {
 						location: {
 							lat: response.data.results[0].geometry.location.lat,
 							lng: response.data.results[0].geometry.location.lng
