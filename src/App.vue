@@ -1,37 +1,42 @@
 <template>
   <div id="app">
-    <h1>search for a user on github</h1>
-    <input type="text" v-model="userName" @keydown="sendQuery">
-    <div v-if="response">
-      <h4>username</h4>
-      <a :href="linkRepresentation">
-        <p v-text="response.login" />
-      </a>
-      <h4>repositories</h4>
-      <p v-text="response.repoCount" />
-      <h4>followers</h4>
-      <p v-text="response.followerCount" />
-      <h4>repositories</h4>
-      <p v-text="response.repoCount" />
-      
+    <header>
+      <h1>search for a user on github</h1>
+      <input type="text" v-model="userName" @keydown="sendQuery"> 
+    </header>
+    <UserMain
+      v-if="queryData"
+      :avatarUrl="queryData.photoUrl"
+      :userName="queryData.login"
+      :score="queryData.repoScore"
+    />
+    <UserInfo
+      v-if="queryData"
+    />
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import UserMain from './components/UserMain.vue'
+import UserInfo from './components/UserInfo.vue'
 
 export default {
   name: 'app',
+  components: {
+    UserMain,
+    UserInfo
+  },
   computed: {
     linkRepresentation() {
-      return `https://github.com/${this.response.login}`
+      return `https://github.com/${this.queryData.login}`
     }
   },
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      response: null,
+      queryData: null,
       userName: ''
     }
   },
@@ -43,8 +48,8 @@ export default {
       if(e.keyCode === 13) {
         console.log('hello')
         axios.get(`http://localhost:3000/user/${this.userName}`)
-          .then(response => {
-            this.response = response.data
+          .then(queryData => {
+            this.queryData = queryData.data
           })
           .catch(err => {
             console.error(err)
@@ -56,27 +61,32 @@ export default {
 </script>
 
 <style lang="scss">
+*, html {
+    margin:0;
+    padding:0;  
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+header {
+  padding: 5vh 0 5vh 0;
+  color: #FFF;
+  background-color: #2c3e50;
 }
 
 h1, h2 {
   font-weight: normal;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
+input {
+  margin-top: 2vh;
+  text-align: center;
 }
 
 a {
